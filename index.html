@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>CIPHER//AGENT — Learn Morse Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="crt"></div>
+
+<!-- =================== ONBOARDING (no shell) =================== -->
+<section id="screen-onboard" class="screen active">
+  <div class="center">
+    <h1 class="accent" style="font-family:var(--font-mono);letter-spacing:1px;">CIPHER<span class="ac" style="color:var(--accent)">//</span>AGENT</h1>
+    <p class="muted" style="margin-top:-6px;">A spy-themed academy that <b class="accent">teaches</b> you to read &amp; send <b class="cyan">MORSE CODE</b></p>
+  </div>
+  <div class="panel" style="text-align:left;">
+    <div id="recruitIntro" class="typed cursor-block"></div>
+    <div id="recruitForm" style="display:none;">
+      <hr>
+      <label for="inName">CODENAME <span class="dim">(required)</span></label>
+      <input id="inName" maxlength="18" placeholder="e.g. RAVEN" autocomplete="off">
+      <div class="field-hint" id="nameHint"></div>
+
+      <label for="inAge">AGE <span class="dim">(required — calibrates your training)</span></label>
+      <input id="inAge" type="number" inputmode="numeric" min="4" max="120" placeholder="e.g. 27">
+      <div class="field-hint" id="ageHint"></div>
+
+      <div class="grid cols2" style="margin-top:var(--s-2);">
+        <div>
+          <label for="inLang">LANGUAGE</label>
+          <select id="inLang"><option value="en">English</option></select>
+        </div>
+        <div>
+          <label for="inGoal">MISSION OBJECTIVE</label>
+          <select id="inGoal">
+            <option value="fun">Just for fun</option>
+            <option value="fast">Learn fast (intense)</option>
+            <option value="ham">Ham radio exam prep</option>
+          </select>
+        </div>
+      </div>
+      <div class="center" style="margin-top:var(--s-5);">
+        <button id="recruitBtn" class="cta big" disabled>▶ ACCEPT RECRUITMENT</button>
+        <p class="dim small" style="margin-top:8px;">Fill in your codename and age to begin · click enables secure audio</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== APP SHELL =================== -->
+<div id="app" hidden>
+  <header id="topbar">
+    <a class="brand" href="#" data-go="hq">CIPHER<span class="ac blink">//</span>AGENT</a>
+    <span class="topbar-spacer"></span>
+    <span class="identity-chip"><span>AGENT</span><b id="hudName">—</b><span class="dim">·</span><b id="hudRank">Recruit</b></span>
+    <span class="intel-chip">◆ <b id="hudIntel">0</b><span class="dim small">intel</span></span>
+    <button id="muteBtn" title="Toggle sound">♪</button>
+  </header>
+
+  <div id="shell">
+    <nav id="siderail">
+      <button class="nav-item" data-go="hq"><span class="ico">◉</span> HQ</button>
+      <button class="nav-item" data-go="learn"><span class="ico">▣</span> Training</button>
+      <button class="nav-item nav-gated" data-nav="drills" data-go="drills"><span class="ico">▦</span> Drills</button>
+      <button class="nav-item nav-gated" data-nav="games" data-go="games"><span class="ico">▧</span> Field Ops</button>
+      <div class="rail-sep"></div>
+      <div class="rail-label">REFERENCE</div>
+      <button class="nav-item nav-gated" data-nav="codex" data-go="codex"><span class="ico">▤</span> Codex</button>
+      <button class="nav-item" data-go="console"><span class="ico">▥</span> Console</button>
+      <div class="rail-sep"></div>
+      <button class="nav-item" data-go="profile"><span class="ico">▨</span> Profile</button>
+    </nav>
+
+    <main id="content">
+      <div id="crumb"></div>
+
+      <!-- ============ HQ ============ -->
+      <section id="screen-hq" class="screen">
+        <div id="hqCoach"></div>
+        <div id="nextAction"></div>
+
+        <div class="statstrip">
+          <div class="stat"><div class="v amber" id="hqIntel">0</div><div class="k">Intel</div></div>
+          <div class="stat"><div class="v" id="hqMastered">0/26</div><div class="k">Letters mastered</div></div>
+          <div class="stat"><div class="v" id="hqAcc">—</div><div class="k">Accuracy</div></div>
+          <div class="stat"><div class="v" id="hqStreak">0</div><div class="k">Best streak</div></div>
+        </div>
+
+        <div class="panel" style="margin-top:var(--s-4);">
+          <div class="spread">
+            <div><b id="hqRankLine">Clearance: Recruit</b></div>
+            <div class="dim small" id="hqXpText"></div>
+          </div>
+          <div class="bar" style="margin-top:8px;"><span id="hqXpBar" style="width:0%"></span></div>
+        </div>
+
+        <div class="section-title">Operations</div>
+        <div class="grid cols2" id="hqMenu">
+          <button class="menu-btn" data-go="learn"><span class="t">▣ Training Missions</span><span class="d">Learn the code, a few letters at a time.</span></button>
+          <button class="menu-btn nav-gated" data-nav="drills" data-go="drills"><span class="t">▦ Drills</span><span class="d">Sharpen what you've learned.</span></button>
+          <button class="menu-btn nav-gated" data-nav="games" data-go="games"><span class="t">▧ Field Operations</span><span class="d">Apply your skills under pressure.</span></button>
+          <button class="menu-btn nav-gated" data-nav="codex" data-go="codex"><span class="t">▤ Cipher Codex</span><span class="d">Reference chart of every signal.</span></button>
+          <button class="menu-btn" data-go="console"><span class="t">▥ Decryption Console</span><span class="d">Encode / decode any message.</span></button>
+          <button class="menu-btn" data-go="profile"><span class="t">▨ Agent Profile</span><span class="d">Settings, speed &amp; commendations.</span></button>
+        </div>
+
+        <div class="section-title">Commendations</div>
+        <div class="badge-wall panel" id="badgeWall"></div>
+      </section>
+
+      <!-- ============ TRAINING ============ -->
+      <section id="screen-learn" class="screen">
+        <h1>▣ Training Missions</h1>
+        <p class="muted">Each mission teaches a few characters, then practises them until you've truly got them. Master one to unlock the next.</p>
+        <div id="missionList" class="grid cols2"></div>
+
+        <div id="lessonView" class="panel" style="display:none;">
+          <div class="phase-track" id="phaseTrack"></div>
+          <div class="phase-name" id="phaseName"></div>
+          <h2 id="lessonTitle" style="text-align:center;"></h2>
+          <div id="lessonBrief" class="typed muted center" style="min-height:1.5em;"></div>
+          <div id="lessonStage" class="lesson-stage"></div>
+        </div>
+      </section>
+
+      <!-- ============ CODEX ============ -->
+      <section id="screen-codex" class="screen">
+        <h1>▤ Cipher Codex</h1>
+        <p class="muted">Full reference. Tap any cell to hear its tone. Letters you haven't learned yet are dimmed.</p>
+        <div class="section-title">Letters</div><div class="codex-grid" id="codexLetters"></div>
+        <div class="section-title">Numerals</div><div class="codex-grid" id="codexNumbers"></div>
+        <div class="section-title">Punctuation</div><div class="codex-grid" id="codexPunct"></div>
+      </section>
+
+      <!-- ============ CONSOLE ============ -->
+      <section id="screen-console" class="screen">
+        <h1>▥ Decryption Console</h1>
+        <div class="grid cols2">
+          <div class="panel">
+            <h2>Encode ▸ English → Morse</h2>
+            <label for="encIn">Plaintext</label>
+            <input id="encIn" placeholder="type a message...">
+            <label>Ciphertext</label>
+            <div class="morse-glyph readout" id="encOut" style="word-break:break-word;min-height:1.8em;"><span class="dim">awaiting signal...</span></div>
+            <div class="row" style="margin-top:12px;">
+              <button id="encPlay" class="alt">▶ Transmit</button>
+              <button id="encStop" class="danger">■ Stop</button>
+            </div>
+            <div id="encDropped" class="amber small" style="margin-top:6px;min-height:1em;"></div>
+          </div>
+          <div class="panel">
+            <h2>Decode ▸ Morse → English</h2>
+            <label for="decIn">Ciphertext <span class="dim">( . - · space=letter · / =word )</span></label>
+            <input id="decIn" class="mono" placeholder="... --- ...   .... ..">
+            <label>Plaintext</label>
+            <div id="decOut" class="bigchar readout" style="font-size:1.6em;min-height:1.4em;word-break:break-word;"><span class="dim" style="font-size:.6em;">awaiting intercept...</span></div>
+            <p class="dim small">Tip: one space between letters, " / " (or three spaces) between words.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ DRILLS ============ -->
+      <section id="screen-drills" class="screen">
+        <h1>▦ Decryption Drills</h1>
+        <p class="muted">Focused practice on the letters you've already learned. Pick a mode.</p>
+        <div id="drillMenu" class="grid cols3">
+          <button class="menu-btn" data-drill="intercept"><span class="t">🎧 Intercept</span><span class="d">Listen, then type what you heard.</span></button>
+          <button class="menu-btn" data-drill="decode"><span class="t">👁 Decode</span><span class="d">Read the pattern, name the character.</span></button>
+          <button class="menu-btn" data-drill="transmit"><span class="t">📡 Transmit</span><span class="d">Tap the code yourself.</span></button>
+          <button class="menu-btn" data-drill="review"><span class="t">🗂 Daily Brief</span><span class="d">Mixed review of letters due for a refresher.</span></button>
+        </div>
+        <div id="drillStage" class="panel" style="display:none;">
+          <h2 id="drillTitle"></h2>
+          <div class="row" style="margin-bottom:var(--s-3);">
+            <span class="pill">Streak <b id="drillStreak">0</b></span>
+            <span class="pill">Correct <b id="drillCorrect">0</b>/<b id="drillTotal">0</b></span>
+            <span class="pill" id="drillScopePill"></span>
+          </div>
+          <div id="drillBody" class="center" style="margin:var(--s-4) 0;"></div>
+          <div id="drillFeedback" class="center" style="min-height:1.6em;"></div>
+        </div>
+      </section>
+
+      <!-- ============ FIELD OPS ============ -->
+      <section id="screen-games" class="screen">
+        <h1>▧ Field Operations</h1>
+        <p class="muted">Applied missions that put your decoding to the test. Each unlocks as you learn enough letters.</p>
+        <div id="gameMenu" class="grid cols2"></div>
+        <div id="gameStage" class="panel" style="display:none;">
+          <h2 id="gameTitle"></h2>
+          <div id="gameBody"></div>
+        </div>
+      </section>
+
+      <!-- ============ PROFILE ============ -->
+      <section id="screen-profile" class="screen">
+        <h1>▨ Agent Profile</h1>
+        <div class="grid cols2">
+          <div class="panel">
+            <h2>Dossier</h2>
+            <label for="setName">Codename</label><input id="setName">
+            <label for="setAge">Age</label><input id="setAge" type="number" inputmode="numeric" min="4" max="120">
+            <label for="setGoal">Mission objective</label>
+            <select id="setGoal">
+              <option value="fun">Just for fun</option>
+              <option value="fast">Learn fast (intense)</option>
+              <option value="ham">Ham radio exam prep</option>
+            </select>
+            <label for="setWpm">Signal speed — <span id="wpmLabel">10</span> WPM</label>
+            <input id="setWpm" type="range" min="5" max="30" step="1" value="10">
+            <label for="setPitch">Tone pitch — <span id="pitchLabel">600</span> Hz</label>
+            <input id="setPitch" type="range" min="400" max="900" step="20" value="600">
+            <hr>
+            <label for="setMusic">♫ Music &amp; ambience — <span id="musicLabel">50</span>%</label>
+            <input id="setMusic" type="range" min="0" max="100" step="5" value="50">
+            <label for="setSfx">♪ Sound effects — <span id="sfxLabel">70</span>%</label>
+            <input id="setSfx" type="range" min="0" max="100" step="5" value="70">
+            <label style="display:flex;align-items:center;gap:10px;margin-top:12px;cursor:pointer;">
+              <input type="checkbox" id="muteToggle"> mute all audio
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+              <input type="checkbox" id="flickerToggle"> enable CRT flicker
+            </label>
+            <hr>
+            <button id="saveProfile" class="cta">✔ Save calibration</button>
+          </div>
+          <div class="panel">
+            <h2>Service Record</h2>
+            <p>Clearance: <b class="amber" id="pfRank">Recruit</b></p>
+            <p>Intel points: <b id="pfIntel">0</b></p>
+            <p>Overall accuracy: <b id="pfAcc">—</b> (<span id="pfAttempts">0</span> attempts)</p>
+            <p>Letters mastered: <b id="pfMastered">0/26</b></p>
+            <p>Best decryption streak: <b id="pfStreak">0</b></p>
+            <hr>
+            <h2>Badges</h2>
+            <div class="badge-wall" id="pfBadges"></div>
+            <hr>
+            <button id="resetBtn" class="danger">⟳ Purge record &amp; re-recruit</button>
+          </div>
+        </div>
+      </section>
+
+      <footer>CIPHER//AGENT — codebreaking trainer · all signals simulated · audio via Web Audio API</footer>
+    </main>
+  </div>
+
+  <nav id="tabbar"><div class="tabs">
+    <button class="tab" data-go="hq"><span class="ico">◉</span>HQ</button>
+    <button class="tab" data-go="learn"><span class="ico">▣</span>Train</button>
+    <button class="tab nav-gated" data-nav="drills" data-go="drills"><span class="ico">▦</span>Drills</button>
+    <button class="tab nav-gated" data-nav="games" data-go="games"><span class="ico">▧</span>Ops</button>
+    <button class="tab nav-gated" data-nav="codex" data-go="codex"><span class="ico">▤</span>Codex</button>
+  </div></nav>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
